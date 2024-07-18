@@ -23,32 +23,63 @@ function reset() {
 }
 </script> -->
 
-<template>
-  <form @submit.prevent="CreateTodo()">
-    <label for="description">Description: </label>
-    <input v-model="data.todoDescription" id="description" type="text" name="answer">
-    <input type="submit" value="Add-On"/>
-  </form>
 
-  <!-- <pre>{{ data.todoDescription }}</pre> -->
+<template>
+  <h1>Submit the form Now!</h1>
+  <!-- <button @click="displayForm? displayForm=false: displayForm=true">Show Form Link!</button> -->
+
+  <button @click="toggleForm()">Show Form</button>
+
+  <p>
+    {{ displayForm? 'Form is Shared': 'Form is not visible' }}
+  </p>
+
+  <div v-show="displayForm">
+    <form @submit.prevent="CreateTodo()">
+    <label for="Description">Description: </label>
+    <input v-model="data.todoDescription" id="Description" type="text" name="answer" required />
+    <button >Submit</button>
+  </form>
+  </div>
+
   <ol>
-    <li v-for="todo in data.todos">{{ todo }}</li>
+    <li v-for="(todo,index) in data.todo">
+      <del v-if="todo.isCompleted">{{ todo.description }} </del>
+      <span v-else>{{ todo.description }} </span>
+      <button @click="DeleteList(index)">Delete it</button>
+      <button v-if="!todo.isCompleted" @click="Completed(index)">Completed Task</button>
+    </li>
   </ol>
 </template>
 
 <script setup>
 
 import { reactive } from 'vue';
+import { ref } from 'vue';
+
+const displayForm = ref(false);
 
 const data = reactive({
-  todos:[],
-  todoDescription:"",
+  todo:[],
+  todoDescription: "",
 })
 
 function CreateTodo() {
-  console.log("Hello World");
-  // data.todos.push("Buy me Milk!");
-  data.todos.push(data.todoDescription);
-  data.todoDescription="";
+  console.log(data.todoDescription);
+  data.todo.push({description: data.todoDescription,
+    isCompleted: false,
+  });
+}
+
+function DeleteList(index) {
+  data.todo.splice(index,1);
+}
+
+function Completed(index) {
+  data.todo[index].isCompleted=true;
+}
+
+function toggleForm() {
+  displayForm.value = !displayForm.value;
 }
 </script>
